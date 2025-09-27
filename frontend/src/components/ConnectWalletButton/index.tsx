@@ -83,7 +83,8 @@ export default function ConnectWalletButton() {
   }, [user]);
 
   const backgroundStyle = {
-    border: "2px solid rgba(255, 255, 255, 0.2)",
+    border: "2px solid rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#f8f9fa",
   };
 
   return (
@@ -147,14 +148,14 @@ export default function ConnectWalletButton() {
               </div>
             ) : (
               <div className="flex items-center justify-center w-full">
-                <span className="text-center text-white font-medium text-sm">
+                <span className="text-center text-black font-medium text-sm">
                   Connect
                 </span>
               </div>
             )
           ) : (
             <div className="flex items-center justify-center w-full">
-              <span className="text-center text-white font-medium text-sm">
+              <span className="text-center text-black font-medium text-sm">
                 Loading...
               </span>
             </div>
