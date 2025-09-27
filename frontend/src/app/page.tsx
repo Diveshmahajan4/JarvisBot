@@ -33,6 +33,7 @@ import OnboardingGate from "@/components/OnboardingGate";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { JarvisBotIcon } from "@/components/JarvisBotIcon";
+import lighthouse from '@lighthouse-web3/sdk';
 
 export default function Home() {
   const [isInput, setIsInput] = useState(false);
@@ -50,6 +51,34 @@ export default function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { closeChat, sendMessage } = useChat();
   const loadingBotResponse = sendMessage.isPending;
+
+  useEffect(() => {
+  if (!conversation) return;
+
+  const upload = async () => {
+    try {
+      const privyToken = localStorage.getItem("privy:token") || "";
+      console.log("Local storage user id: ", privyToken);
+
+      const apiKey = "9b26a7bc.df292854af6d47d09222c014d4faa1b4"; 
+      const lastMessage = conversation[conversation.length - 1];
+      const messageText = JSON.stringify({
+        id: lastMessage.metadata.id,
+        text: lastMessage.metadata.text,
+        sender: lastMessage.metadata.sender,
+        timestamp: lastMessage.metadata.timestamp,
+      });
+
+      const output = await lighthouse.uploadText(messageText, apiKey, privyToken);
+
+      console.log("Uploaded:", output);
+    } catch (err) {
+      console.error("Upload error", err);
+    }
+  };
+
+  upload();
+}, [conversation]);
 
   const parseBotResponse = (botResponse: BotResponse) => {
     let nextMessage: Message;
