@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, KeyboardEvent, useRef, useEffect } from "react";
-import { BookOpen, Send, Sparkles, TrendingUp, Undo2 } from "lucide-react";
+import { BookOpen, Send, Sparkles, TrendingUp, Undo2, Mic, MicOff } from "lucide-react";
 import { format } from "date-fns";
 import { arbitrum } from "viem/chains";
 
@@ -37,8 +37,12 @@ import { JarvisBotIcon } from "@/components/JarvisBotIcon";
 export default function Home() {
   const [isInput, setIsInput] = useState(false);
   const [command, setCommand] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [conversation, setConversation] = useState<Message[]>([]);
   const [typingText, setTypingText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -222,12 +226,99 @@ export default function Home() {
     setIsInput(latestBotMessage instanceof TextMessage);
   }, [conversation]);
 
-  // close chat room by default
   useEffect(() => {
     closeChat();
   }, [closeChat]);
 
-  // Process onboarding logic
+  const startVoiceRecording = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert('Speech recognition not supported in this browser!');
+      return;
+    }
+
+    setIsRecording(true);
+    setIsListening(true);
+
+    const recognition = new (window as any).webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    let finalTranscript = '';
+    let currentFullTranscript = '';
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      currentFullTranscript = finalTranscript + interimTranscript;
+      setCommand(currentFullTranscript);
+
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
+
+      silenceTimerRef.current = setTimeout(() => {
+        stopVoiceRecording(currentFullTranscript);
+      }, 4000);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsRecording(false);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const stopVoiceRecording = (transcript?: string) => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+    }
+
+    setIsRecording(false);
+    setIsListening(false);
+
+    const textToSend = transcript || command;
+    
+    if (textToSend.trim()) {
+      console.log('Sending voice message:', textToSend.trim());
+      setTimeout(() => {
+        handleMessage(textToSend.trim());
+      }, 500);
+    } else {
+      console.log('No text to send');
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -256,20 +347,30 @@ export default function Home() {
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
                     onKeyDown={handleKeyPress}
-                    className="w-full h-14 px-6 pr-14 text-lg bg-white border border-black rounded-2xl shadow-sm focus:shadow-md transition-all duration-200"
-                    placeholder="Ask Jarvis"
+                    className={`w-full h-14 px-6 pr-20 text-lg bg-white border border-black rounded-2xl shadow-sm focus:shadow-md transition-all duration-200 ${isRecording ? 'ring-2 ring-blue-500' : ''}`}
+                    placeholder={isRecording ? "Listening..." : "Ask Jarvis"}
                   />
-                  <Button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleMessage(command);
-                    }}
-                    disabled={command.trim() === ""}
-                    className="absolute right-2 top-2 h-10 w-10 rounded-xl bg-gray-600 hover:bg-gray-700 disabled:opacity-50"
-                    size="icon"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
+                  <div className="absolute right-2 top-2 flex gap-1">
+                    <Button
+                      onClick={startVoiceRecording}
+                      disabled={isRecording}
+                      className={`h-10 w-10 rounded-xl transition-colors ${isRecording ? 'bg-red-500 hover:bg-red-600 animate-pulse cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+                      size="icon"
+                    >
+                      {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleMessage(command);
+                      }}
+                      disabled={command.trim() === ""}
+                      className="h-10 w-10 rounded-xl bg-gray-600 hover:bg-gray-700 disabled:opacity-50"
+                      size="icon"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -508,21 +609,29 @@ export default function Home() {
                         value={command}
                         onChange={(e) => setCommand(e.target.value)}
                         onKeyDown={handleKeyPress}
-                        className="w-full h-12 px-4 pr-12 bg-white border-2 border-black rounded-xl focus:shadow-md transition-all"
-                        placeholder="Ask me anything about DeFi strategies..."
-                        // disabled={!isInput}
+                        className={`w-full h-12 px-4 pr-20 bg-white border-2 border-black rounded-xl focus:shadow-md transition-all ${isRecording ? 'ring-2 ring-blue-500' : ''}`}
+                        placeholder={isRecording ? "Listening..." : "Ask me anything about DeFi strategies..."}
                       />
-                      <Button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleMessage(command);
-                        }}
-                        // disabled={command.trim() === "" }
-                        className="absolute right-2 top-2 h-8 w-8 rounded-lg bg-gray-600 hover:bg-gray-700 disabled:opacity-50"
-                        size="icon"
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
+                      <div className="absolute right-2 top-2 flex gap-1">
+                        <Button
+                          onClick={startVoiceRecording}
+                          disabled={isRecording}
+                          className={`h-8 w-8 rounded-lg transition-colors ${isRecording ? 'bg-red-500 hover:bg-red-600 animate-pulse cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+                          size="icon"
+                        >
+                          {isRecording ? <MicOff className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
+                        </Button>
+                        <Button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleMessage(command);
+                          }}
+                          className="h-8 w-8 rounded-lg bg-gray-600 hover:bg-gray-700 disabled:opacity-50"
+                          size="icon"
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
