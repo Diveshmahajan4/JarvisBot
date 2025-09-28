@@ -89,16 +89,14 @@ export default function ConnectWalletButton() {
 
   return (
     <div
-      className={`relative flex items-center justify-center text-center gap-x-1 border border-b-2 ${
-        isDropdownOpen ? "rounded-t-[10px]" : "rounded-[10px]"
-      } py-2 px-3 w-[150px] md:w-[190px] h-[48px]`}
+      className={`relative flex items-center justify-center text-center gap-x-1 border border-b-2 ${isDropdownOpen ? "rounded-t-[10px]" : "rounded-[10px]"
+        } py-2 px-3 w-[150px] md:w-[190px] h-[48px]`}
       style={backgroundStyle}
       ref={dropdownRef}
     >
       <div
-        className={`flex items-center max-w-[30%] ml-2 ${
-          !authenticated ? "hidden" : ""
-        }`}
+        className={`flex items-center max-w-[30%] ml-2 ${!authenticated ? "hidden" : ""
+          }`}
       >
         {/* Chain Selector */}
         <ChainSelector />
@@ -140,9 +138,8 @@ export default function ConnectWalletButton() {
                     alt="Arrow Down"
                     width={12}
                     height={12}
-                    className={`text-[#3B446A] transition-transform ${
-                      isDropdownOpen ? "rotate-180" : ""
-                    }`}
+                    className={`text-[#3B446A] transition-transform ${isDropdownOpen ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
               </div>

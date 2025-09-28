@@ -64,7 +64,6 @@ const OnboardingGate = ({
         </h2>
         <div className="flex flex-col md:flex-row gap-4 w-full">
           <CreateAccount />
-          <BotPreview handleMessage={handleMessage} />
         </div>
       </div>
     );

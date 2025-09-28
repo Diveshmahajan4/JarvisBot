@@ -10,7 +10,7 @@ export class BuildPortfolioMessage extends Message {
   ) {
     super(metadata);
   }
-pn
+
   next(): Message {
     return new TextMessage(this.metadata);
   }
