@@ -1,4 +1,5 @@
 import { HeroSection } from "@/components/blocks/hero-section-dark"
+import HeaderImg from '@/assets/image1.png'
 
 function HeroSectionDemo() {
   return (
@@ -13,8 +14,8 @@ function HeroSectionDemo() {
       ctaText="Get Started"
       ctaHref="/signup"
       bottomImage={{
-        light: "https://www.launchuicomponents.com/app-light.png",
-        dark: "https://www.launchuicomponents.com/app-dark.png",
+        light: HeaderImg,
+        dark: HeaderImg,
       }}
       gridOptions={{
         angle: 65,

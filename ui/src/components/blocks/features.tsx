@@ -1,5 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Bell, Mic } from 'lucide-react'
+import RootStock from '@/assets/RootStock1.png'
+import ChatUI from '@/assets/image1.png'
 
 export function Features() {
     return (
@@ -24,7 +26,7 @@ export function Features() {
 
                             <div className="bg-background overflow-hidden rounded-tl-lg border-l border-t pl-2 pt-2 dark:bg-zinc-950">
                                 <img
-                                    src="https://tailark.com/_next/image?url=%2Fmail2.png&w=3840&q=75"
+                                    src={RootStock}
                                     className="hidden dark:block"
                                     alt="payments illustration dark"
                                     width={1207}
@@ -49,14 +51,14 @@ export function Features() {
                                 <div className="absolute -inset-6 [background:radial-gradient(50%_75%_at_75%_50%,transparent,hsl(var(--background))_100%)]"></div>
                                 <div className="aspect-76/59 overflow-hidden rounded-r-lg border">
                                     <img
-                                        src="https://tailark.com/_next/image?url=%2Forigin-cal-dark.png&w=3840&q=75"
+                                        src={ChatUI}
                                         className="hidden dark:block"
                                         alt="payments illustration dark"
                                         width={1207}
-                                        height={929}
+                                        height={900}
                                     />
                                     <img
-                                        src="https://tailark.com/_next/image?url=%2Forigin-cal.png&w=3840&q=75"
+                                        src={ChatUI}
                                         className="shadow dark:hidden"
                                         alt="payments illustration light"
                                         width={1207}
