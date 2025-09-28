@@ -23,21 +23,48 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isMinimized, setIsMinimized] = useState(false);
 
-  // 聊天機器人響應 mutation
+
   const sendMessage = useMutation({
     mutationFn: async (message: string): Promise<BotResponse> => {
       console.log("CHATBOT MESSAGE", message);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_CHATBOT_URL}/defiInfo`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-          },
-          body: JSON.stringify({ input_text: message }),
-        }
-      );
-      return res.json();
+
+      const request_body = {
+        id: 13101820,
+        resolvedStatus: false,
+        requestedByUser: "User",
+        actualQueryString: message
+      }
+
+      if (message.toLowerCase().includes("strat")) {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_CHATBOT_URL}/defiInfo`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify({ input_text: message }),
+          }
+        );
+        console.log(res.json())
+        return res.json();
+
+      } else {
+        const res = await fetch(
+          `http://127.0.0.1:8000/userQuery/processUserQuery`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify(request_body),
+          })
+          console.log(res.json())
+          return res.json();
+      }
+
+
+
     },
   });
 
@@ -53,12 +80,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       const msgObj: Message =
         typeof firstMessage === "string"
           ? {
-              id: Date.now().toString(),
-              text: firstMessage,
-              sender: "bot",
-              timestamp: new Date(),
-              type: "Text",
-            }
+            id: Date.now().toString(),
+            text: firstMessage,
+            sender: "bot",
+            timestamp: new Date(),
+            type: "Text",
+          }
           : firstMessage;
       setMessages([msgObj]);
     }
