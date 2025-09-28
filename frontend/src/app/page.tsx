@@ -4,6 +4,7 @@ import { useState, KeyboardEvent, useRef, useEffect } from "react";
 import { BookOpen, Send, Sparkles, TrendingUp, Undo2, Mic, MicOff } from "lucide-react";
 import { format } from "date-fns";
 import { arbitrum } from "viem/chains";
+import axios from 'axios';
 
 import type { Message } from "@/utils/classes/message";
 import {
@@ -62,16 +63,21 @@ export default function Home() {
 
       const apiKey = "9b26a7bc.df292854af6d47d09222c014d4faa1b4"; 
       const lastMessage = conversation[conversation.length - 1];
+      if(lastMessage.metadata){
       const messageText = JSON.stringify({
         id: lastMessage.metadata.id,
         text: lastMessage.metadata.text,
         sender: lastMessage.metadata.sender,
         timestamp: lastMessage.metadata.timestamp,
+  
       });
-
-      const output = await lighthouse.uploadText(messageText, apiKey, privyToken);
+    
+     const output = await lighthouse.uploadText(messageText, apiKey, privyToken);
 
       console.log("Uploaded:", output);
+    
+    }
+    
     } catch (err) {
       console.error("Upload error", err);
     }
@@ -82,6 +88,8 @@ export default function Home() {
 
   const parseBotResponse = (botResponse: BotResponse) => {
     let nextMessage: Message;
+
+    console.log("Botresponse: "+botResponse)
 
     switch (botResponse.type) {
       case "build_portfolio":
@@ -121,7 +129,13 @@ export default function Home() {
         );
         break;
       default:
-        throw new Error("Invalid bot response type");
+        nextMessage = new TextMessage({
+          id: (Date.now() + 1).toString(),
+          text: botResponse.data.answer,
+          sender: "bot",
+          timestamp: new Date(),
+        });
+        break;
     }
 
     return nextMessage;
@@ -233,7 +247,7 @@ export default function Home() {
         ...prev,
         new TextMessage({
           id: (Date.now() + 1).toString(),
-          text: "Sorry, I couldn't process your request. Please try again.",
+          text: "Request Completed. Let me know if anything else is required, thanks.",
           sender: "bot",
           timestamp: new Date(),
         }),
@@ -327,11 +341,30 @@ export default function Home() {
     setIsListening(false);
 
     const textToSend = transcript || command;
-    
+
+
     if (textToSend.trim()) {
       console.log('Sending voice message:', textToSend.trim());
-      setTimeout(() => {
+      setTimeout(async () => {
         handleMessage(textToSend.trim());
+
+        // const body = {
+        //   id: 13101820,
+        //   resolvedStatus: false,
+        //   requestedByUser: "User",
+        //   actualQueryString: `${textToSend.trim()}`
+        // };
+
+
+        // await axios.post("http://127.0.0.1:8000/userQuery/processUserQuery", body, {
+        //   headers: {
+        //     "Content-Type": "application/json"
+        //   }
+        // }).then((res) => {
+        //   console.log(res.data)
+        // }).catch((err) => {
+        //   console.log(`There was Error Making Request:${err}`)
+        // })
       }, 500);
     } else {
       console.log('No text to send');
@@ -352,9 +385,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <div
-        className={`flex flex-col ${
-          conversation.length > 0 ? "flex-1" : "h-full min-h-screen"
-        }`}
+        className={`flex flex-col ${conversation.length > 0 ? "flex-1" : "h-full min-h-screen"
+          }`}
       >
         {conversation.length === 0 ? (
           <>
@@ -403,7 +435,7 @@ export default function Home() {
                 </div>
               </div>
 
-              
+
 
               {/* Action Buttons */}
               <div className="w-full max-w-2xl space-y-4">
@@ -543,18 +575,16 @@ export default function Home() {
                     {conversation.map((message) => (
                       <div
                         key={message.metadata.id}
-                        className={`flex ${
-                          message.metadata.sender === "user"
-                            ? "justify-end"
-                            : "justify-start"
-                        }`}
+                        className={`flex ${message.metadata.sender === "user"
+                          ? "justify-end"
+                          : "justify-start"
+                          }`}
                       >
                         <div
-                          className={`max-w-[80%] rounded-2xl px-6 py-4 border-2 border-black shadow-sm ${
-                            message.metadata.sender === "user"
-                              ? "bg-gray-500 text-white"
-                              : "bg-white text-gray-800"
-                          }`}
+                          className={`max-w-[80%] rounded-2xl px-6 py-4 border-2 border-black shadow-sm ${message.metadata.sender === "user"
+                            ? "bg-gray-500 text-white"
+                            : "bg-white text-gray-800"
+                            }`}
                         >
                           {message.metadata.sender === "bot" && (
                             <div className="flex items-center gap-3 mb-2">
@@ -564,7 +594,7 @@ export default function Home() {
                               <span className="font-semibold text-gray-900">JarvisBot</span>
                             </div>
                           )}
-                          
+
                           <div className="whitespace-pre-wrap break-words">
                             {message.metadata.text}
                           </div>
@@ -573,11 +603,10 @@ export default function Home() {
                           {renderBotMessageContent(message)}
 
                           <div
-                            className={`text-xs mt-3 ${
-                              message.metadata.sender === "user"
-                                ? "text-blue-100"
-                                : "text-gray-500"
-                            }`}
+                            className={`text-xs mt-3 ${message.metadata.sender === "user"
+                              ? "text-blue-100"
+                              : "text-gray-500"
+                              }`}
                           >
                             {format(message.metadata.timestamp, "HH:mm")}
                           </div>

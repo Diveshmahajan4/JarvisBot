@@ -2,6 +2,7 @@ import os
 import pyautogui
 import time
 import cv2
+import requests
 from dotenv import load_dotenv
 from fastapi import APIRouter
 from views.userQuery import requetsedQuery
@@ -46,7 +47,7 @@ def sendTransactionToWalletAddress():
         pyautogui.typewrite("0x2f9a620CA1811EF90200789e7511d88D224053dD",interval=0.2)
         time.sleep(4)
         pyautogui.press("enter")
-        pyautogui.typewrite("0.000001",interval=0.3)
+        pyautogui.typewrite("0.01",interval=0.3)
         time.sleep(1)
         pyautogui.press("enter")
         continue_btn= pyautogui.locateOnScreen(r"D:\hp\Dev\EthIndia_2025\backend\venv\ass\continue.png", confidence=0.8)
@@ -57,6 +58,7 @@ def sendTransactionToWalletAddress():
                if confirm_btn:
                       pyautogui.click(confirm_btn)
                       time.sleep(2)
+
 
 def feedRootStockTestnetWallet():
         pyautogui.press("win")
@@ -94,7 +96,7 @@ def visitFlowEVMTestNetBlockExplorer():
         time.sleep(2)
         pyautogui.press("enter")
 
-def visitRootStockBlockExplorer():
+async def visitRootStockBlockExplorer():
         pyautogui.press("win")
         time.sleep(1)
         pyautogui.typewrite("chrome", interval=0.1)
@@ -104,6 +106,24 @@ def visitRootStockBlockExplorer():
         pyautogui.typewrite("https://explorer.testnet.rootstock.io/address/0xCd60F24071Dc0d145E366aF0128E0c2a4689cd46",interval=0.1)
         time.sleep(2)
         pyautogui.press("enter")
+        all_transactions=[]
+
+        transactions=await requests.get("https://rootstock-testnet.blockscout.com/api/v2/addresses/0xCD60F24071Dc0D145E366af0128E0C2a4689cd46/transactions")
+
+        for item in transactions.items:
+              one_Transaction_Object={
+                     "gas":item['gas_used'],
+                     "transaction_types":item.transaction_types[0],
+                     "date_of_transaction":item['timestamp'],
+              }
+
+              all_transactions.push(one_Transaction_Object)
+              return all_transactions
+
+# async def getRootStockTransactions():
+       
+
+
        
 open_Metamask_tool=StructuredTool.from_function(
         func=openMetamaskWallet,
@@ -202,9 +222,9 @@ async def process_langchain_response(userQuery:requetsedQuery):
           Example usage: If user asks open my Rootstock faucet  then call `feedFlowEVMTestnetWallet`
 
         6.visitFlowEVMTestNetBlockExplorer():
-         Behavior: It opens the Flow EVM testnet users blockchain explorer
+          Behavior: It opens the Flow EVM testnet users blockchain explorer
 
-          Example usage: If user asks I Want see my all transactions on Rootstock testnet then call `visitFlowEVMTestNetBlockExplorer`
+          Example usage: If user asks I Want see my all transactions on Rootstock testnet then call `visitFlowEVMTestNetBlockExplorer` 
 
 
         Identity:
@@ -220,4 +240,6 @@ async def process_langchain_response(userQuery:requetsedQuery):
         
         result = agent.invoke({"messages": [("user", userQuery.actualQueryString)]})
 
-        return result
+        final_result_message=result["messages"][-1]["content"]
+
+        return final_result_message

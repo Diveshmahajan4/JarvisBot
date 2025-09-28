@@ -53,9 +53,9 @@ const Navbar = () => {
                 ))}
             </div>
             <div>
-                <Button variant='secondary'>
-                    Connect
-                </Button>
+                <a href='http://localhost:3000'><Button variant='secondary'>
+                    Get Started
+                </Button></a>
             </div>
         </div>
     )
