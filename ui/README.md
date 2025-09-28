@@ -1,73 +1,132 @@
-# React + TypeScript + Vite
+# Jarvis AI – UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains the **frontend UI** for **Jarvis AI**, a blockchain-focused AI voice assistant that allows users to interact with wallets, smart contracts, and decentralized services using natural language and voice commands.
 
-Currently, two official plugins are available:
+The UI is built using **React**, **TypeScript**, and **Vite**, providing a fast development experience with modern tooling.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+* **Portfolio Insights**: Get instant summaries of wallets, tokens, and NFTs.
+* **Natural Language Queries**: Ask about blockchain data, token prices, and market trends.
+* **Voice Recognition**: Execute commands and transactions with AI-powered speech-to-text.
+* **Smart Contract Automation**: Trigger workflows on-chain and off-chain.
+* **Seamless Integration**: Works with dApps, wallets, and external services.
+* **Modern UI/UX**: Built with responsive layouts, dark theme, and modular components.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* **React 18** – UI framework
+* **TypeScript** – Strongly typed JavaScript
+* **Vite** – Next-generation frontend build tool
+* **TailwindCSS** (if used) – Utility-first styling
+* **Spline** (3D assets integration)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📂 Folder Structure
+
+```
+ui/
+│── public/             # Static assets
+│── src/
+│   ├── assets/         # Images, icons, 3D models
+│   ├── components/     # Reusable UI components
+│   ├── pages/          # Page-level components
+│   ├── hooks/          # Custom React hooks
+│   ├── context/        # Global state/context providers
+│   ├── services/       # API & blockchain service calls
+│   ├── types/          # TypeScript type definitions
+│   ├── App.tsx         # Root component
+│   └── main.tsx        # Entry point
+│── index.html
+│── tsconfig.json
+│── vite.config.ts
+│── package.json
+│── README.md           # This file
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Getting Started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Install Dependencies
+
+```bash
+cd ui
+npm install
 ```
+
+### 2. Run Development Server
+
+```bash
+npm run dev
+```
+
+The app will be available at: **[http://localhost:5173](http://localhost:5173)**
+
+### 3. Build for Production
+
+```bash
+npm run build
+```
+
+### 4. Preview Production Build
+
+```bash
+npm run preview
+```
+
+---
+
+## 📸 UI Preview
+
+Here are some screenshots of the Jarvis AI UI:
+
+### Portfolio Insights
+
+![Portfolio Insights](./public/screenshots/portfolio.png.jpeg)
+
+### Query Blockchain Data
+
+![Query Blockchain Data](./public/screenshots/query.png.jpeg)
+
+### Voice Command to Execution
+
+![Voice Commands](./public/screenshots/voice.png.jpeg)
+
+---
+
+## 🔌 Integration Notes
+
+* Connects with **Rootstock** and other blockchain APIs.
+* Uses **FastAPI MCP Server** for backend communication.
+* Can be extended to interact with multiple dApps and services.
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature-name`)
+3. Commit changes (`git commit -m "Add new feature"`)
+4. Push to branch (`git push origin feature-name`)
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License** – feel free to use and modify.
+
+---
+
+## 👨‍💻 Authors
+
+* Built by the **Jarvis AI Team**
+* Sponsors: [Flow.com](https://flow.com), Rootstock, Filecoin
+
+---
