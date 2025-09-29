@@ -15,7 +15,7 @@ from langchain_core.messages import SystemMessage
 
 load_dotenv()
 
-GOOGLE_GEMINI_API_KEY=os.getenv("GOOGLE_GEMINI_API_KEY","AIzaSyB6mH4-5OcybeEBEsGhJ7YFzNM-EOqWgHI")
+GOOGLE_GEMINI_API_KEY=os.getenv("GOOGLE_GEMINI_API_KEY")
 
 router = APIRouter(prefix="/userQuery",tags=["userQuery"])
 
@@ -44,7 +44,7 @@ def sendTransactionToWalletAddress():
     if send_btn:
         pyautogui.click(send_btn)
         time.sleep(1)
-        pyautogui.typewrite("0x2f9a620CA1811EF90200789e7511d88D224053dD",interval=0.2)
+        pyautogui.typewrite("",interval=0.2)
         time.sleep(4)
         pyautogui.press("enter")
         pyautogui.typewrite("0.01",interval=0.3)
@@ -92,7 +92,7 @@ def visitFlowEVMTestNetBlockExplorer():
         time.sleep(1)
         pyautogui.press("enter")
         time.sleep(1)
-        pyautogui.typewrite("https://evm-testnet.flowscan.io/address/0xCd60F24071Dc0d145E366aF0128E0c2a4689cd46",interval=0.1)
+        pyautogui.typewrite("https://evm-testnet.flowscan.io/address",interval=0.1)
         time.sleep(2)
         pyautogui.press("enter")
 
@@ -103,12 +103,12 @@ async def visitRootStockBlockExplorer():
         time.sleep(1)
         pyautogui.press("enter")
         time.sleep(1)
-        pyautogui.typewrite("https://explorer.testnet.rootstock.io/address/0xCd60F24071Dc0d145E366aF0128E0c2a4689cd46",interval=0.1)
+        pyautogui.typewrite("https://explorer.testnet.rootstock.io/address",interval=0.1)
         time.sleep(2)
         pyautogui.press("enter")
         all_transactions=[]
 
-        transactions=await requests.get("https://rootstock-testnet.blockscout.com/api/v2/addresses/0xCD60F24071Dc0D145E366af0128E0C2a4689cd46/transactions")
+        transactions=await requests.get("https://rootstock-testnet.blockscout.com/api/v2/addresses/transactions")
 
         for item in transactions.items:
               one_Transaction_Object={
